@@ -35,3 +35,18 @@
 **Date**: 2026-06-13
 **Decision**: USD → INR at fixed rate of 84. Rate is locked when expense is imported/created.
 **Rationale**: Assignment specifies fixed rate. No real-time currency API needed.
+
+### D007 — Prisma v7 driver adapter
+**Date**: 2026-06-13
+**Decision**: Prisma v7 requires a driver adapter — can no longer put `url` in `schema.prisma`.
+**Approach**:
+- Created `prisma.config.mjs` with `datasource.url` and `datasource.directUrl`
+- Installed `@prisma/adapter-pg` and `pg` packages
+- Created centralized `src/lib/prisma.js` that initializes `PrismaClient({ adapter })`
+- Generated client outputs to `src/generated/prisma/` (gitignored, regenerated on build)
+**Rationale**: Prisma v7 dropped the built-in Rust query engine in favor of a lighter TypeScript-native architecture with explicit driver adapters.
+
+### D008 — Dev member dates
+**Date**: 2026-06-13
+**Decision**: Dev gets `joined_at: 2026-02-08` and `left_at: 2026-03-14` to represent the window during which Dev appears in trip expenses.
+**Rationale**: Even though Dev is a "guest" not a flatmate, having date boundaries lets the import engine enforce the same membership timeline checks for Dev as for other members.

@@ -1,12 +1,223 @@
-// Prisma schema will be fully defined in Phase 2
-// This is a placeholder to verify Prisma is configured correctly
+// FlatSplit — Prisma Schema
+// All models for the shared expenses app
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────
+
+enum SplitType {
+  EQUAL
+  UNEQUAL
+  PERCENTAGE
+  SHARES
+}
+
+enum ImportStatus {
+  PENDING
+  REVIEWING
+  COMPLETED
+  FAILED
+}
+
+enum AnomalyType {
+  EXACT_DUPLICATE
+  FORMAT_ERROR
+  INVALID_PRECISION
+  NAME_MISMATCH
+  MISSING_PAYER
+  SETTLEMENT_DETECTED
+  PERCENTAGE_SUM_ERROR
+  UNKNOWN_PARTICIPANT
+  CONFLICTING_DUPLICATE
+  NEGATIVE_AMOUNT
+  INVALID_DATE_FORMAT
+  MISSING_CURRENCY
+  ZERO_AMOUNT
+  AMBIGUOUS_DATE
+  POST_DEPARTURE_EXPENSE
+  CONFLICTING_SPLIT_TYPE
+  MISSING_SPLIT_TYPE
+  EMPTY_SPLIT_WITH
+  PRE_JOIN_EXPENSE
+}
+
+enum Severity {
+  INFO
+  WARNING
+  ERROR
+}
+
+enum Resolution {
+  PENDING
+  AUTO_APPROVED
+  USER_APPROVED
+  USER_REJECTED
+  USER_EDITED
+  SKIPPED
+}
+
+// ─────────────────────────────────────────────
+// Auth
+// ─────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password_hash String
+  member_id     String   @unique
+  member        Member   @relation(fields: [member_id], references: [id])
+  created_at    DateTime @default(now())
+
+  @@map("users")
+}
+
+// ─────────────────────────────────────────────
+// Members
+// ─────────────────────────────────────────────
+
+model Member {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  joined_at DateTime
+  left_at   DateTime?
+  is_active Boolean   @default(true)
+  notes     String?
+
+  // Relations
+  user                 User?
+  expenses_paid        Expense[]      @relation("PaidBy")
+  splits               ExpenseSplit[]
+  settlements_sent     Settlement[]   @relation("SettlementFrom")
+  settlements_received Settlement[]   @relation("SettlementTo")
+
+  created_at DateTime @default(now())
+
+  @@map("members")
+}
+
+// ─────────────────────────────────────────────
+// Expenses
+// ─────────────────────────────────────────────
+
+model Expense {
+  id                   String    @id @default(uuid())
+  description          String
+  date                 DateTime  @db.Date
+  original_amount      Decimal   @db.Decimal(12, 2)
+  currency             String    @default("INR")
+  exchange_rate        Decimal   @db.Decimal(10, 4) @default(1.0)
+  converted_amount_inr Decimal   @db.Decimal(12, 2)
+  paid_by_id           String
+  paid_by              Member    @relation("PaidBy", fields: [paid_by_id], references: [id])
+  split_type           SplitType
+  category             String?
+  notes                String?
+  is_refund            Boolean   @default(false)
+
+  // Import tracking
+  import_run_id  String?
+  import_run     ImportRun? @relation(fields: [import_run_id], references: [id])
+  csv_row_number Int?
+
+  // Splits
+  splits ExpenseSplit[]
+
+  created_at DateTime @default(now())
+
+  @@map("expenses")
+}
+
+model ExpenseSplit {
+  id              String   @id @default(uuid())
+  expense_id      String
+  expense         Expense  @relation(fields: [expense_id], references: [id], onDelete: Cascade)
+  member_id       String
+  member          Member   @relation(fields: [member_id], references: [id])
+  share_value     Decimal? @db.Decimal(10, 4)
+  owed_amount_inr Decimal  @db.Decimal(12, 2)
+
+  created_at DateTime @default(now())
+
+  @@unique([expense_id, member_id])
+  @@map("expense_splits")
+}
+
+// ─────────────────────────────────────────────
+// Settlements
+// ─────────────────────────────────────────────
+
+model Settlement {
+  id              String   @id @default(uuid())
+  date            DateTime @db.Date
+  from_member_id  String
+  from_member     Member   @relation("SettlementFrom", fields: [from_member_id], references: [id])
+  to_member_id    String
+  to_member       Member   @relation("SettlementTo", fields: [to_member_id], references: [id])
+  amount_inr      Decimal  @db.Decimal(12, 2)
+  original_amount Decimal? @db.Decimal(12, 2)
+  currency        String   @default("INR")
+  exchange_rate   Decimal  @db.Decimal(10, 4) @default(1.0)
+  notes           String?
+
+  // Import tracking
+  import_run_id  String?
+  import_run     ImportRun? @relation(fields: [import_run_id], references: [id])
+  csv_row_number Int?
+
+  created_at DateTime @default(now())
+
+  @@map("settlements")
+}
+
+// ─────────────────────────────────────────────
+// Import Audit
+// ─────────────────────────────────────────────
+
+model ImportRun {
+  id             String       @id @default(uuid())
+  filename       String
+  uploaded_by_id String
+  total_rows     Int
+  imported_count Int          @default(0)
+  flagged_count  Int          @default(0)
+  skipped_count  Int          @default(0)
+  status         ImportStatus @default(PENDING)
+  started_at     DateTime     @default(now())
+  completed_at   DateTime?
+
+  // Relations
+  expenses    Expense[]
+  settlements Settlement[]
+  anomalies   ImportAnomaly[]
+
+  @@map("import_runs")
+}
+
+model ImportAnomaly {
+  id             String      @id @default(uuid())
+  import_run_id  String
+  import_run     ImportRun   @relation(fields: [import_run_id], references: [id], onDelete: Cascade)
+  row_number     Int
+  anomaly_type   AnomalyType
+  severity       Severity
+  description    String
+  original_value String?
+  suggested_fix  String?
+  resolution     Resolution  @default(PENDING)
+  user_action    String?
+  auto_resolved  Boolean     @default(false)
+
+  created_at  DateTime  @default(now())
+  resolved_at DateTime?
+
+  @@map("import_anomalies")
 }

@@ -21,6 +21,7 @@ Thumbs.db
 
 # Prisma
 server/prisma/migrations/
+server/src/generated/
 
 # Uploads
 server/uploads/
