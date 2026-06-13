@@ -25,16 +25,8 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-const storage = multer.diskStorage({
-  destination: uploadsDir,
-  filename: (req, file, cb) => {
-    const uniqueName = `${Date.now()}-${file.originalname}`;
-    cb(null, uniqueName);
-  },
-});
-
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
     if (file.mimetype === 'text/csv' || file.originalname.endsWith('.csv')) {
       cb(null, true);
@@ -48,6 +40,9 @@ const upload = multer({
 // All import routes require authentication
 router.use(authMiddleware);
 
+// In-memory store for processed rows between preview and confirm steps
+const pendingImportRows = new Map();
+
 // Fixed exchange rate (D006)
 const USD_TO_INR = 84;
 
@@ -56,15 +51,17 @@ const USD_TO_INR = 84;
 // ─────────────────────────────────────────────
 router.post('/preview', upload.single('file'), async (req, res, next) => {
   try {
-    if (!req.file) {
+    console.log('STEP 1: file received', req.file?.originalname);
+    
+    if (!req.file || !req.file.buffer) {
       throw AppError(400, 'NO_FILE', 'No CSV file uploaded');
     }
 
-    // Read CSV content
-    const csvText = fs.readFileSync(req.file.path, 'utf-8');
+    const csvText = req.file.buffer.toString('utf-8');
+    console.log('STEP 2: csv length', csvText.length);
 
-    // Run the import pipeline
     const { rows, anomalies, summary } = await runPipeline(csvText);
+    console.log('STEP 3: pipeline done, rows:', rows.length, 'anomalies:', anomalies.length);
 
     // Create ImportRun record
     const importRun = await prisma.importRun.create({
@@ -76,6 +73,7 @@ router.post('/preview', upload.single('file'), async (req, res, next) => {
         status: 'REVIEWING',
       },
     });
+    console.log('STEP 4: importRun created', importRun.id);
 
     // Save anomalies to database
     if (anomalies.length > 0) {
@@ -93,16 +91,18 @@ router.post('/preview', upload.single('file'), async (req, res, next) => {
         })),
       });
     }
+    console.log('STEP 5: anomalies saved');
 
-    // Save processed rows as JSON for the confirm step
-    const jsonPath = req.file.path.replace(/\.csv$/i, '') + '.json';
-    fs.writeFileSync(jsonPath, JSON.stringify(rows, null, 2));
+    // Save processed rows in memory for the confirm step
+    pendingImportRows.set(importRun.id, rows);
+    console.log('STEP 6: rows saved to memory store');
 
     // Fetch saved anomalies (with IDs) to return
     const savedAnomalies = await prisma.importAnomaly.findMany({
       where: { import_run_id: importRun.id },
       orderBy: { row_number: 'asc' },
     });
+    console.log('STEP 7: fetched saved anomalies', savedAnomalies.length);
 
     res.status(201).json({
       importRunId: importRun.id,
@@ -110,7 +110,10 @@ router.post('/preview', upload.single('file'), async (req, res, next) => {
       anomalies: savedAnomalies,
       summary,
     });
+    console.log('STEP 8: response sent');
   } catch (err) {
+    console.error('CAUGHT ERROR:', err.message);
+    console.error(err.stack);
     next(err);
   }
 });
@@ -162,26 +165,15 @@ router.post('/confirm/:importRunId', async (req, res, next) => {
       anomalyByRow[a.row_number].push(a);
     }
 
-    // Load the processed rows JSON
-    const uploadsFiles = fs.readdirSync(uploadsDir);
-    const jsonFile = uploadsFiles.find(f => f.endsWith('.json') && importRun.filename && f.includes(importRun.filename.replace('.csv', '')));
-    
-    // Fallback: find JSON by looking at the import run creation time
-    let rows;
-    const possibleJsonFiles = uploadsFiles.filter(f => f.endsWith('.json'));
-    for (const f of possibleJsonFiles) {
-      try {
-        const content = JSON.parse(fs.readFileSync(path.join(uploadsDir, f), 'utf-8'));
-        if (Array.isArray(content) && content.length === importRun.total_rows) {
-          rows = content;
-          break;
-        }
-      } catch (e) { continue; }
-    }
+    // Load the processed rows from the memory store
+    const rows = pendingImportRows.get(importRunId);
 
     if (!rows) {
       throw AppError(400, 'DATA_NOT_FOUND', 'Processed row data not found. Please re-upload the CSV.');
     }
+
+    // Free up memory since we are about to import
+    pendingImportRows.delete(importRunId);
 
     // Load members for name resolution
     const members = await prisma.member.findMany();

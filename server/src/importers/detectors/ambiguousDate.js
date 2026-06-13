@@ -23,14 +23,14 @@ function detect(rows, _members) {
 
       // Check notes for keywords that suggest ambiguity awareness
       const notes = (row.notes || '').toLowerCase();
-      const hasAmbiguityHint = /date|format|us|american|mm.dd|dd.mm|check|confirm|ambiguous/.test(notes);
+      const hasAmbiguityHint = /ambiguous|which date|april or may|\bmm\b|\bdd\b/.test(notes);
 
       // Flag if both parts ≤ 12 (genuinely ambiguous)
       // If there's a note about dates, definitely flag; otherwise still flag but note the assumption
       anomalies.push({
         row_number: row._row_number,
         anomaly_type: 'AMBIGUOUS_DATE',
-        severity: 'WARNING',
+        severity: hasAmbiguityHint ? 'WARNING' : 'INFO',
         description: hasAmbiguityHint
           ? `Date "${raw}" is ambiguous: could be ${first}/${second}/${year} (DD/MM) or ${second}/${first}/${year} (MM/DD). Notes suggest date format uncertainty.`
           : `Date "${raw}" is ambiguous: could be ${first}/${second}/${year} (DD/MM) or ${second}/${first}/${year} (MM/DD). Assuming DD-MM-YYYY format.`,

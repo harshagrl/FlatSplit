@@ -75,7 +75,7 @@ function isDateAmbiguous(dateStr) {
  */
 function parseSplitWith(str) {
   if (!str?.trim()) return [];
-  return str.split(',').map(n => n.trim()).filter(Boolean);
+  return str.split(/[;,]+/).map(n => n.trim()).filter(Boolean);
 }
 
 /**
@@ -112,7 +112,11 @@ function fuzzyMatchName(name, memberNames) {
 
   // Reverse starts-with (e.g., "Aisha K" → "Aisha")
   const reverseStartsWith = memberNames.find(
-    m => normalized.startsWith(m.toLowerCase())
+    m => {
+      const mLower = m.toLowerCase();
+      return normalized.startsWith(mLower) && 
+             (normalized.length === mLower.length || normalized[mLower.length] === ' ');
+    }
   );
   if (reverseStartsWith) return { match: reverseStartsWith, score: 0.7 };
 

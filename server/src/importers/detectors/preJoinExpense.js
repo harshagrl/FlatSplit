@@ -42,7 +42,7 @@ function detect(rows, members) {
       if (!member) continue;
 
       const joinedAt = new Date(member.joined_at);
-      if (expenseDate < joinedAt) {
+      if (formatDateISO(expenseDate) < formatDateISO(joinedAt)) {
         anomalies.push({
           row_number: row._row_number,
           anomaly_type: 'PRE_JOIN_EXPENSE',
