@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage.jsx'
 import RegisterPage from './pages/RegisterPage.jsx'
 import DashboardPage from './pages/DashboardPage.jsx'
 import ExpensesPage from './pages/ExpensesPage.jsx'
+import ExpenseDetailPage from './pages/ExpenseDetailPage.jsx'
 import SettlementsPage from './pages/SettlementsPage.jsx'
 import ImportPage from './pages/ImportPage.jsx'
 import MembersPage from './pages/MembersPage.jsx'
@@ -55,6 +56,7 @@ export default function App() {
       <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
         <Route index element={<DashboardPage />} />
         <Route path="expenses" element={<ExpensesPage />} />
+        <Route path="expenses/:id" element={<ExpenseDetailPage />} />
         <Route path="settlements" element={<SettlementsPage />} />
         <Route path="import" element={<ImportPage />} />
         <Route path="import/history" element={<ImportReportPage />} />
