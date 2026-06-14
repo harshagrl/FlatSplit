@@ -1,0 +1,331 @@
+======================================================
+                  IMPORT REPORT
+======================================================
+
+Filename: Expenses Export.csv
+Status: COMPLETED
+Total Rows: 42
+Imported: 40
+Skipped: 2
+Anomalies Flagged: 8
+
+------------------------------------------------------
+                 ANOMALY LOG
+------------------------------------------------------
+
+[Row 2] - INFO - INVALID_DATE_FORMAT
+Description: Date "01-02-2026" parsed as 2026-02-01
+Resolution:  AUTO_APPROVED
+
+[Row 2] - INFO - AMBIGUOUS_DATE
+Description: Date "01-02-2026" is ambiguous: could be 01/02/2026 (DD/MM) or 02/01/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 3] - INFO - AMBIGUOUS_DATE
+Description: Date "03-02-2026" is ambiguous: could be 03/02/2026 (DD/MM) or 02/03/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 3] - INFO - INVALID_DATE_FORMAT
+Description: Date "03-02-2026" parsed as 2026-02-03
+Resolution:  AUTO_APPROVED
+
+[Row 4] - INFO - AMBIGUOUS_DATE
+Description: Date "05-02-2026" is ambiguous: could be 05/02/2026 (DD/MM) or 02/05/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 4] - INFO - INVALID_DATE_FORMAT
+Description: Date "05-02-2026" parsed as 2026-02-05
+Resolution:  AUTO_APPROVED
+
+[Row 5] - INFO - AMBIGUOUS_DATE
+Description: Date "08-02-2026" is ambiguous: could be 08/02/2026 (DD/MM) or 02/08/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 5] - INFO - INVALID_DATE_FORMAT
+Description: Date "08-02-2026" parsed as 2026-02-08
+Resolution:  AUTO_APPROVED
+
+[Row 6] - INFO - INVALID_DATE_FORMAT
+Description: Date "08-02-2026" parsed as 2026-02-08
+Resolution:  AUTO_APPROVED
+
+[Row 6] - INFO - AMBIGUOUS_DATE
+Description: Date "08-02-2026" is ambiguous: could be 08/02/2026 (DD/MM) or 02/08/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 7] - INFO - AMBIGUOUS_DATE
+Description: Date "10-02-2026" is ambiguous: could be 10/02/2026 (DD/MM) or 02/10/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 7] - INFO - INVALID_DATE_FORMAT
+Description: Date "10-02-2026" parsed as 2026-02-10
+Resolution:  AUTO_APPROVED
+
+[Row 7] - INFO - FORMAT_ERROR
+Description: Amount "1,200" contains commas. Auto-fixing to 1200
+Resolution:  AUTO_APPROVED
+
+[Row 8] - INFO - AMBIGUOUS_DATE
+Description: Date "12-02-2026" is ambiguous: could be 12/02/2026 (DD/MM) or 02/12/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 8] - INFO - INVALID_DATE_FORMAT
+Description: Date "12-02-2026" parsed as 2026-02-12
+Resolution:  AUTO_APPROVED
+
+[Row 9] - INFO - INVALID_DATE_FORMAT
+Description: Date "14-02-2026" parsed as 2026-02-14
+Resolution:  AUTO_APPROVED
+
+[Row 10] - INFO - INVALID_DATE_FORMAT
+Description: Date "15-02-2026" parsed as 2026-02-15
+Resolution:  AUTO_APPROVED
+
+[Row 10] - INFO - INVALID_PRECISION
+Description: Amount "899.995" has more than 2 decimal places. Auto-rounding to 900
+Resolution:  AUTO_APPROVED
+
+[Row 11] - WARNING - NAME_MISMATCH
+Description: Payer "Priya S" doesn't exactly match any member. Did you mean "Priya"?
+Resolution:  USER_EDITED
+Action:      Priya
+
+[Row 11] - INFO - INVALID_DATE_FORMAT
+Description: Date "18-02-2026" parsed as 2026-02-18
+Resolution:  AUTO_APPROVED
+
+[Row 12] - INFO - INVALID_DATE_FORMAT
+Description: Date "20-02-2026" parsed as 2026-02-20
+Resolution:  AUTO_APPROVED
+
+[Row 13] - INFO - INVALID_DATE_FORMAT
+Description: Date "22-02-2026" parsed as 2026-02-22
+Resolution:  AUTO_APPROVED
+
+[Row 13] - ERROR - MISSING_PAYER
+Description: Row 13 has no payer specified. Cannot import without knowing who paid.
+Resolution:  PENDING
+
+[Row 14] - INFO - INVALID_DATE_FORMAT
+Description: Date "25-02-2026" parsed as 2026-02-25
+Resolution:  AUTO_APPROVED
+
+[Row 14] - WARNING - SETTLEMENT_DETECTED
+Description: Row looks like a settlement, not an expense: "Rohan paid Aisha back". Consider importing as a Settlement record.
+Resolution:  USER_EDITED
+Action:      Import as Settlement record instead of Expense
+
+[Row 15] - INFO - INVALID_DATE_FORMAT
+Description: Date "28-02-2026" parsed as 2026-02-28
+Resolution:  AUTO_APPROVED
+
+[Row 16] - INFO - INVALID_DATE_FORMAT
+Description: Date "01-03-2026" parsed as 2026-03-01
+Resolution:  AUTO_APPROVED
+
+[Row 16] - INFO - AMBIGUOUS_DATE
+Description: Date "01-03-2026" is ambiguous: could be 01/03/2026 (DD/MM) or 03/01/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 17] - INFO - INVALID_DATE_FORMAT
+Description: Date "03-03-2026" parsed as 2026-03-03
+Resolution:  AUTO_APPROVED
+
+[Row 18] - INFO - INVALID_DATE_FORMAT
+Description: Date "05-03-2026" parsed as 2026-03-05
+Resolution:  AUTO_APPROVED
+
+[Row 18] - INFO - AMBIGUOUS_DATE
+Description: Date "05-03-2026" is ambiguous: could be 05/03/2026 (DD/MM) or 03/05/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 19] - INFO - AMBIGUOUS_DATE
+Description: Date "08-03-2026" is ambiguous: could be 08/03/2026 (DD/MM) or 03/08/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 19] - INFO - INVALID_DATE_FORMAT
+Description: Date "08-03-2026" parsed as 2026-03-08
+Resolution:  AUTO_APPROVED
+
+[Row 20] - INFO - INVALID_DATE_FORMAT
+Description: Date "09-03-2026" parsed as 2026-03-09
+Resolution:  AUTO_APPROVED
+
+[Row 20] - INFO - AMBIGUOUS_DATE
+Description: Date "09-03-2026" is ambiguous: could be 09/03/2026 (DD/MM) or 03/09/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 21] - INFO - AMBIGUOUS_DATE
+Description: Date "10-03-2026" is ambiguous: could be 10/03/2026 (DD/MM) or 03/10/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 21] - INFO - INVALID_DATE_FORMAT
+Description: Date "10-03-2026" parsed as 2026-03-10
+Resolution:  AUTO_APPROVED
+
+[Row 22] - INFO - AMBIGUOUS_DATE
+Description: Date "10-03-2026" is ambiguous: could be 10/03/2026 (DD/MM) or 03/10/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 22] - INFO - INVALID_DATE_FORMAT
+Description: Date "10-03-2026" parsed as 2026-03-10
+Resolution:  AUTO_APPROVED
+
+[Row 23] - INFO - INVALID_DATE_FORMAT
+Description: Date "11-03-2026" parsed as 2026-03-11
+Resolution:  AUTO_APPROVED
+
+[Row 23] - INFO - AMBIGUOUS_DATE
+Description: Date "11-03-2026" is ambiguous: could be 11/03/2026 (DD/MM) or 03/11/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 23] - WARNING - UNKNOWN_PARTICIPANT
+Description: "Dev's friend Kabir" in split_with is not a known member and has no close match
+Resolution:  USER_EDITED
+Action:      Remove unknown participant, split among known members only
+
+[Row 24] - INFO - INVALID_DATE_FORMAT
+Description: Date "11-03-2026" parsed as 2026-03-11
+Resolution:  AUTO_APPROVED
+
+[Row 24] - INFO - AMBIGUOUS_DATE
+Description: Date "11-03-2026" is ambiguous: could be 11/03/2026 (DD/MM) or 03/11/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 24] - WARNING - CONFLICTING_DUPLICATE
+Description: Conflicts with row 25: same date and similar description "Dinner at Thalassa" but different amount: 2400 vs 2450, paid_by: Aisha vs Rohan. Review both rows.
+Resolution:  USER_APPROVED
+
+[Row 25] - INFO - AMBIGUOUS_DATE
+Description: Date "11-03-2026" is ambiguous: could be 11/03/2026 (DD/MM) or 03/11/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 25] - WARNING - CONFLICTING_DUPLICATE
+Description: Conflicts with row 24: same date and similar description "Thalassa dinner" but different amount: 2400 vs 2450, paid_by: Aisha vs Rohan. Review both rows.
+Resolution:  USER_APPROVED
+
+[Row 25] - INFO - INVALID_DATE_FORMAT
+Description: Date "11-03-2026" parsed as 2026-03-11
+Resolution:  AUTO_APPROVED
+
+[Row 26] - INFO - AMBIGUOUS_DATE
+Description: Date "12-03-2026" is ambiguous: could be 12/03/2026 (DD/MM) or 03/12/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 26] - INFO - NEGATIVE_AMOUNT
+Description: Negative amount -30 detected for "Parasailing refund". Importing as refund expense.
+Resolution:  AUTO_APPROVED
+
+[Row 26] - INFO - INVALID_DATE_FORMAT
+Description: Date "12-03-2026" parsed as 2026-03-12
+Resolution:  AUTO_APPROVED
+
+[Row 27] - INFO - INVALID_DATE_FORMAT
+Description: Date "Mar-14" parsed as 2026-03-14
+Resolution:  AUTO_APPROVED
+
+[Row 28] - INFO - INVALID_DATE_FORMAT
+Description: Date "15-03-2026" parsed as 2026-03-15
+Resolution:  AUTO_APPROVED
+
+[Row 28] - INFO - MISSING_CURRENCY
+Description: Currency is empty for "Groceries DMart". Defaulting to INR.
+Resolution:  AUTO_APPROVED
+
+[Row 29] - INFO - INVALID_DATE_FORMAT
+Description: Date "18-03-2026" parsed as 2026-03-18
+Resolution:  AUTO_APPROVED
+
+[Row 30] - INFO - INVALID_DATE_FORMAT
+Description: Date "20-03-2026" parsed as 2026-03-20
+Resolution:  AUTO_APPROVED
+
+[Row 31] - INFO - INVALID_DATE_FORMAT
+Description: Date "22-03-2026" parsed as 2026-03-22
+Resolution:  AUTO_APPROVED
+
+[Row 31] - WARNING - ZERO_AMOUNT
+Description: Zero amount for "Dinner order Swiggy". This row will be skipped. Notes: "counted twice earlier - fixing later"
+Resolution:  USER_EDITED
+
+[Row 32] - INFO - INVALID_DATE_FORMAT
+Description: Date "25-03-2026" parsed as 2026-03-25
+Resolution:  AUTO_APPROVED
+
+[Row 33] - INFO - INVALID_DATE_FORMAT
+Description: Date "28-03-2026" parsed as 2026-03-28
+Resolution:  AUTO_APPROVED
+
+[Row 34] - INFO - INVALID_DATE_FORMAT
+Description: Date "04-05-2026" parsed as 2026-05-04
+Resolution:  AUTO_APPROVED
+
+[Row 34] - INFO - AMBIGUOUS_DATE
+Description: Date "04-05-2026" is ambiguous: could be 04/05/2026 (DD/MM) or 05/04/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 35] - INFO - AMBIGUOUS_DATE
+Description: Date "01-04-2026" is ambiguous: could be 01/04/2026 (DD/MM) or 04/01/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 35] - INFO - INVALID_DATE_FORMAT
+Description: Date "01-04-2026" parsed as 2026-04-01
+Resolution:  AUTO_APPROVED
+
+[Row 36] - INFO - AMBIGUOUS_DATE
+Description: Date "02-04-2026" is ambiguous: could be 02/04/2026 (DD/MM) or 04/02/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 36] - WARNING - POST_DEPARTURE_EXPENSE
+Description: Meera left on 2026-03-31 but is included in expense dated 02-04-2026
+Resolution:  USER_EDITED
+Action:      Remove Meera from split, recalculate among remaining members
+
+[Row 36] - INFO - INVALID_DATE_FORMAT
+Description: Date "02-04-2026" parsed as 2026-04-02
+Resolution:  AUTO_APPROVED
+
+[Row 37] - INFO - INVALID_DATE_FORMAT
+Description: Date "05-04-2026" parsed as 2026-04-05
+Resolution:  AUTO_APPROVED
+
+[Row 37] - INFO - AMBIGUOUS_DATE
+Description: Date "05-04-2026" is ambiguous: could be 05/04/2026 (DD/MM) or 04/05/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 38] - INFO - AMBIGUOUS_DATE
+Description: Date "08-04-2026" is ambiguous: could be 08/04/2026 (DD/MM) or 04/08/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 38] - INFO - INVALID_DATE_FORMAT
+Description: Date "08-04-2026" parsed as 2026-04-08
+Resolution:  AUTO_APPROVED
+
+[Row 39] - INFO - AMBIGUOUS_DATE
+Description: Date "10-04-2026" is ambiguous: could be 10/04/2026 (DD/MM) or 04/10/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 39] - INFO - INVALID_DATE_FORMAT
+Description: Date "10-04-2026" parsed as 2026-04-10
+Resolution:  AUTO_APPROVED
+
+[Row 40] - INFO - INVALID_DATE_FORMAT
+Description: Date "12-04-2026" parsed as 2026-04-12
+Resolution:  AUTO_APPROVED
+
+[Row 40] - INFO - AMBIGUOUS_DATE
+Description: Date "12-04-2026" is ambiguous: could be 12/04/2026 (DD/MM) or 04/12/2026 (MM/DD). Assuming DD-MM-YYYY format.
+Resolution:  PENDING
+
+[Row 41] - INFO - INVALID_DATE_FORMAT
+Description: Date "15-04-2026" parsed as 2026-04-15
+Resolution:  AUTO_APPROVED
+
+[Row 42] - INFO - INVALID_DATE_FORMAT
+Description: Date "18-04-2026" parsed as 2026-04-18
+Resolution:  AUTO_APPROVED
+
+[Row 43] - INFO - INVALID_DATE_FORMAT
+Description: Date "20-04-2026" parsed as 2026-04-20
+Resolution:  AUTO_APPROVED
+
