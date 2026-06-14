@@ -33,10 +33,9 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/members', require('./routes/members'));
 app.use('/api/import', require('./routes/import'));
-// app.use('/api/expenses', require('./routes/expenses'));
-// app.use('/api/settlements', require('./routes/settlements'));
-// app.use('/api/import', require('./routes/import'));
-// app.use('/api/balances', require('./routes/balances'));
+app.use('/api/expenses', require('./routes/expenses'));
+app.use('/api/settlements', require('./routes/settlements'));
+app.use('/api/balances', require('./routes/balances'));
 
 // 404 handler (must come before error handler)
 app.use((req, res) => {
