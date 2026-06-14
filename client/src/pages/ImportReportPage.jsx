@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { FileText, Calendar, CheckCircle, AlertTriangle, XCircle, ArrowLeft, Database, Clock } from 'lucide-react'
+import { FileText, Calendar, CheckCircle, AlertTriangle, XCircle, ArrowLeft, Database, Clock, Info } from 'lucide-react'
 import api from '../services/api.js'
 import { formatDate } from '../utils/formatters.js'
 
