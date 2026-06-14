@@ -2,6 +2,11 @@
 
 A multi-user shared expenses tracking app built for a group of flatmates. Features a CSV importer that detects, surfaces, and handles 16 categories of data anomalies according to documented policies.
 
+## 🚀 Live Demo
+
+**Frontend (Vercel):** [https://flat-split-umber.vercel.app/](https://flat-split-umber.vercel.app/)
+*(Backend is deployed on Render and automatically spins up when you hit the frontend)*
+
 ## Tech Stack
 
 | Layer | Technology |
