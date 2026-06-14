@@ -59,7 +59,7 @@ export default function App() {
         <Route path="expenses/:id" element={<ExpenseDetailPage />} />
         <Route path="settlements" element={<SettlementsPage />} />
         <Route path="import" element={<ImportPage />} />
-        <Route path="import/history" element={<ImportReportPage />} />
+        <Route path="/import/history" element={<ImportReportPage />} />
         <Route path="import/:id/report" element={<ImportReportPage />} />
         <Route path="members" element={<MembersPage />} />
       </Route>
