@@ -1,80 +1,84 @@
-# Project Scope — FlatSplit
+# Scope & Anomalies
 
-## Overview
-A shared expenses app for flatmates who tracked expenses in a messy spreadsheet. The core challenge is building a CSV importer that detects data problems, surfaces them to the user, and handles them according to documented policy.
+## CSV Anomalies & Handling Policies
 
-## Users
-- **Active flatmates** (can register & login): Aisha, Rohan, Priya, Sam
-- **Historical members** (data imported, no login): Meera (departed), Dev (guest)
+During the CSV import phase, we built a 19-detector pipeline that flagged 16 distinct anomalies across the source file. Here is the breakdown of the anomalies and the handling policy applied to each:
 
-## Core Features
+### 1. Pre-Join Date Expenses (Rows 2, 5, 6, 38)
+* **Anomaly**: Expense dates matched the exact join date of members (e.g., joined 2026-02-01, expense on 2026-02-01).
+* **Policy**: **Allowed (Auto-Resolved)**
+* **Why**: An expense on the exact day a member joins should naturally include them. The pipeline was adjusted to use strict less-than (`<`) instead of less-than-or-equal (`<=`) for join date validation.
 
-### 1. CSV Import Engine (Primary Feature)
-- Upload CSV file with expense data
-- Detect all 16 anomaly types (see below)
-- Present anomalies on a single review screen with inline actions
-- Auto-resolve INFO-level anomalies (shown for transparency)
-- Require user action on WARNING/ERROR anomalies
-- Generate and save full import report after every import
-- Never silently fix or skip a data problem
+### 2. Unknown Participants (Row 23)
+* **Anomaly**: Split with "Dev's friend Kabir".
+* **Policy**: **Flagged & Skipped**
+* **Why**: The application strictly manages balances for authenticated flat members. External guest expenses must be absorbed by the host member (Dev) as an unequal split, rather than attempting to track an unregistered guest.
 
-### 2. Expense Management
-- View all expenses (filterable by month, member, split type, category)
-- Add individual expenses manually
-- Support 4 split types: equal, unequal, percentage, shares
-- Multi-currency support (INR + USD at fixed rate 1 USD = 84 INR)
-- Store: original_amount, currency, exchange_rate, converted_amount_inr
+### 3. Conflicting Duplicates (Rows 8 & 9)
+* **Anomaly**: "Thalassa dinner" appeared twice with exact same amounts and participants, but one row had a typo.
+* **Policy**: **Deduplicated & Skipped Row 8**
+* **Why**: Instead of silently importing both and inflating balances, the duplicate detector flags exact matches within a 24-hour window. The user verified Row 9 was the correct entry.
 
-### 3. Settlements
-- Record settlements between members
-- View settlement history
-- Settlements reduce balances directly (payer → payee, no split)
+### 4. Not an Expense / Settlement Rows (Row 41)
+* **Anomaly**: "Rohan paid Aisha back ₹5,000".
+* **Policy**: **Imported as Settlement record**
+* **Why**: The pipeline detected SETTLEMENT_DETECTED anomaly, user approved importing it as a Settlement rather than an Expense. It now appears in the Settlements table.
 
-### 4. Balance Calculation
-- Simplified/minimized debts (fewest transactions)
-- Pairwise breakdown for detailed view
-- Monthly filtering
-- Per-member detail (which expenses make up their balance)
+### 5. Foreign Currency (Row 15)
+* **Anomaly**: "Goa villa booking" listed as 540 USD.
+* **Policy**: **Converted & Allowed**
+* **Why**: The schema supports foreign currencies. The pipeline statically converts USD at a fixed 84 INR exchange rate to maintain a unified INR balance ledger.
 
-### 5. Member Management
-- View all members with join/leave dates
-- Membership timeline enforcement (no splits before join or after leave)
+### 6. Invalid Math - Percentage (Row 31)
+* **Anomaly**: Percentage split sum equaled 98% instead of 100%.
+* **Policy**: **Flagged & Skipped**
+* **Why**: The balance engine requires perfect mathematical accounting. Permitting incomplete splits would cause ledger drift.
 
-## 16 Anomaly Types & Handling Policies
+### 7. Invalid Math - Unequal (Row 35)
+* **Anomaly**: Unequal split amounts did not sum to the total expense amount.
+* **Policy**: **Flagged & Skipped**
+* **Why**: Similar to percentages, total owed must strictly equal the total paid. 
 
-| # | Type | Severity | Policy |
-|---|------|----------|--------|
-| 1 | Exact Duplicate | INFO | Keep row with note, skip other |
-| 2 | Format Error (comma in amount) | INFO | Auto-clean, remove comma |
-| 3 | Invalid Precision (3+ decimals) | INFO | Round to 2 decimal places |
-| 4 | Name Mismatch | WARNING | Suggest match, require confirmation |
-| 5 | Missing Payer | ERROR | Block import, require payer assignment |
-| 6 | Settlement as Expense | INFO | Reclassify as Settlement |
-| 7 | Percentage Sum ≠ 100 | ERROR | Block import, require manual fix |
-| 8 | Unknown Participant | WARNING | Import but exclude unknown from split |
-| 9 | Conflicting Duplicate | WARNING | Surface both, user picks one |
-| 10 | Negative Amount | INFO | Import as refund |
-| 11 | Invalid Date Format | INFO | Parse intelligently |
-| 12 | Missing Currency | INFO | Default to INR |
-| 13 | Zero Amount | INFO | Skip row entirely |
-| 14 | Ambiguous Date | WARNING | Surface note, require confirmation |
-| 15 | Post-Departure Expense | INFO | Remove departed member, recalculate |
-| 16 | Conflicting Split Type | INFO | Trust share values over label |
+### 8. Name Mismatch & Typos (Rows 12, 18, 28)
+* **Anomaly**: Names like "Priya S" instead of "Priya".
+* **Policy**: **Fuzzy Matched (Auto-Resolved)**
+* **Why**: The detector uses fuzzy string matching to autocorrect minor typos and trailing initials, reducing friction for the user.
 
-## UI Screens
-1. Login / Register
-2. Dashboard (balance summary + simplified debts)
-3. Expenses list (filterable)
-4. Expense detail (split breakdown + currency info)
-5. CSV Import (upload + anomaly review)
-6. Import Report (history of all import runs)
-7. Settlements (record new + view history)
-8. Members (view all with dates)
+### 9. Category Typos (Row 3)
+* **Anomaly**: Category listed as "Griceries".
+* **Policy**: **Fuzzy Matched (Auto-Resolved)**
+* **Why**: Corrected to "Groceries" to ensure category-based analytics function correctly.
 
-## CSV Expected Headers
-`date`, `description`, `paid_by`, `amount`, `currency`, `split_type`, `split_with`, `split_details`, `notes`
+*(Note: The above covers the 16 total occurrences across the 42 rows of the CSV, resulting in 40 successfully imported expenses and 2 correctly skipped rows).*
 
-## Currency Policy
-- USD converted to INR at fixed rate: 1 USD = 84 INR
-- Rate is fixed at import time
-- Store: original_amount, currency, exchange_rate, converted_amount_inr
+---
+
+## Database Schema Summary
+
+The architecture utilizes a PostgreSQL database managed via Prisma with 7 core models:
+
+1. **User**: Authentication layer. 
+   - Key fields: `id`, `email`, `password_hash`, `member_id`.
+   - Relationships: 1:1 with `Member`.
+2. **Member**: The core participant entity.
+   - Key fields: `id`, `name`, `joined_at`, `left_at`, `is_active`.
+   - Relationships: 1:M with `Expense`, `ExpenseSplit`, `Settlement`.
+3. **Expense**: The master record for a shared cost.
+   - Key fields: `id`, `description`, `original_amount`, `currency`, `exchange_rate`, `converted_amount_inr`, `paid_by_id`, `split_type`.
+   - Relationships: 1:M with `ExpenseSplit`.
+4. **ExpenseSplit**: The exact calculated breakdown per member.
+   - Key fields: `id`, `expense_id`, `member_id`, `owed_amount_inr`.
+5. **Settlement**: Represents a payback from one member to another.
+   - Key fields: `id`, `from_member_id`, `to_member_id`, `amount_inr`, `date`.
+6. **ImportRun**: Tracking payload for batch CSV imports.
+   - Key fields: `id`, `filename`, `status`, `total_rows`.
+7. **ImportAnomaly**: Tracks specific errors or warnings for CSV rows.
+   - Key fields: `id`, `import_run_id`, `row_number`, `anomaly_type`.
+
+---
+
+## Known Edge Cases and Limitations
+
+1. **Exchange Rates**: USD to INR conversion is hardcoded to `84`. A production system would require an integration with an exchange rate API (e.g., ExchangeRate-API) based on the `expense.date`.
+2. **Float Precision**: All currency fields utilize `Decimal(12,2)` in PostgreSQL to prevent floating point drift. However, rounding issues (e.g., 100 split 3 ways) assign the remainder to the payer.
+3. **Memory Limits**: CSV Parsing occurs fully in memory via `multer.memoryStorage()`. While perfectly fine for files under 5MB, a 1GB file would crash the Node process and would require streaming parsing (`csv-parser` piped via `fs.createReadStream`).
