@@ -12,6 +12,24 @@ A multi-user shared expenses tracking app built for a group of flatmates. Featur
 | Auth | Custom JWT with bcrypt |
 | Deploy | Render (backend) + Vercel (frontend) |
 
+## 🧪 Test Accounts (Pre-seeded)
+
+| Name | Email | Password |
+|------|-------|----------|
+| Aisha | aisha@test.com | password123 |
+| Rohan | rohan@test.com | password123 |
+| Priya | priya@test.com | password123 |
+| Sam | sam@test.com | password123 |
+
+*Note: Meera and Dev are historical members — they appear in imported expenses but do not have login accounts.*
+
+To test the full import flow:
+1. Log in as any account above
+2. Navigate to `/import`
+3. Upload the provided `Expenses_Export.csv` file
+4. Review the anomalies and approve each one
+5. Click **Confirm Import**
+
 ## Project Structure
 
 ```
